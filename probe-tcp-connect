@@ -1,0 +1,86 @@
+'''
+Copyright (c) 2017, Opsani
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+License template: http://opensource.org/licenses/BSD-2-Clause
+                  (as accessed on June 2, 2015)
+
+probe-tcp-connect - probe which verifies tcp connect to instance(s)
+'''
+from __future__   import print_function
+from probe_common import skpp
+from probe_common import probe
+
+import socket
+import sys
+
+# === definitions
+
+_dflt_timeout    = 120          # default action timeout in seconds
+_dflt_port       = 80           # default port (http)
+_connect_timeout = 2.0          # socket_connect timeout in float seconds
+
+# === operations
+
+def _tcp_connect(host, port=_dflt_port, **dummy):
+    '''
+    Connect to a socket on the specified host:port or raise a UserError exception
+    '''
+    try:
+        port = int(port)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(_connect_timeout)
+        s.connect((host, port))
+        s.close()
+    except Exception as e:
+        raise probe.UserError('failed to connect to tcp socket at {}:{}: {}'.format(host, port, e))
+
+# === action handlers
+
+def _service_up(project, inst=[], **args):
+    '''
+    Connect to socket on each instance:  no-op if no instances, fail on first
+    failure.
+    '''
+    for i in inst:
+        probe.wait_retry_op(args.get('timeout', _dflt_timeout),
+            lambda: _tcp_connect(host=probe.extract_ip(i), **args))
+    return
+
+# === Skopos plugin action wrappers
+
+@skpp.action
+def service_up(**args):
+    try:
+        _service_up(**args)
+    except (probe.UserError, probe.UserValidationError) as e:
+        print('Error:', str(e), file=sys.stderr)
+        sys.exit(1)
+    return args
+
+# === Main
+
+if __name__ == "__main__":
+    skpp.run('probe-tcp-connect', globals())

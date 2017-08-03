@@ -8,11 +8,11 @@ The tcp-connect probe supports the following actions:
 This action supports the following arguments:
 
 * `port` - port number (default `80`)
-* `timeout` - operation timeout *per service instance*, in seconds (default `120`).  This is how long to keep retrying to open the socket (success)
+* `timeout` - operation timeout *per service instance*, in seconds (default `120`).  This is how long to keep retrying to open the socket (success).
 
 ## examples
 
-Here are a few examples in the form of quality gates specified in a Skopos TED file (target environment descriptor).  Quality gates associate probe actions to one or more component images.  During application deployment Skopos executes the specified probes to assess components deployed with matching images.
+Here are a few examples in the form of quality gates specified in a Skopos TED file (target environment descriptor).  Quality gates associate probe executions to one or more component images.  During application deployment Skopos executes the specified probes to assess components deployed with matching images.
 
 ```yaml
 vars:

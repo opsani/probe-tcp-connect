@@ -1,5 +1,5 @@
 # probe-tcp-connect
-The tcp-connect probe performs a simple socket connect health check.  It attempts to open a socket on component instances.
+The tcp-connect probe performs a simple socket connect health check on component instances.  It attempts to open a socket on the component's service network (the same network used to consume that service).
 
 The tcp-connect probe supports the following actions:
 
@@ -8,7 +8,7 @@ The tcp-connect probe supports the following actions:
 This action supports the following arguments:
 
 * `port` - port number (default `80`)
-* `timeout` - operation timeout *per service instance*, in seconds (default `120`).  This is how long to keep retrying to open the socket (success).
+* `timeout` - operation timeout *per service instance*, in seconds (default `30`).  This is how long to keep retrying to open the socket (success).
 
 ## examples
 

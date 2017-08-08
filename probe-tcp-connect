@@ -38,7 +38,7 @@ import sys
 
 # === definitions
 
-_dflt_timeout    = 120          # default action timeout in seconds
+_dflt_timeout    = 30           # default action timeout in seconds
 _dflt_port       = 80           # default port (http)
 _connect_timeout = 2.0          # socket_connect timeout in float seconds
 

@@ -1,5 +1,5 @@
 REPO      = opsani
-IMAGE_TAG = v1
+IMAGE_TAG = latest
 PROBE     = tcp-connect
 
 .PHONY: all \

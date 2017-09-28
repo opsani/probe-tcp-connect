@@ -83,3 +83,16 @@ def wait_retry_op(timeout, op):
 
         # delay next request (avoid busy loop)
         time.sleep(1)
+
+def parse_intlist(lst):
+    '''
+    Return set of integers parsed from a comma-separated string or list of strings.
+    Examples:
+    - lst: "200,404,201"
+    - lst: ["200", "404", "201"]
+    '''
+    items = lst if isinstance(lst, list) else lst.split(',')
+    ret = set()
+    for v in items:
+        ret.add(int(v))
+    return ret
